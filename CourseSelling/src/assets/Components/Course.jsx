@@ -1,147 +1,171 @@
-import * as React from 'react';
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Card,TextField,Button, Typography } from "@mui/material";
-// import Box from '@mui/material/Box';
-// import LinearProgress from '@mui/material/LinearProgress';
+import { Card, Grid } from "@mui/material";
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom";
+import { Typography, TextField, Button } from "@mui/material";
+import axios from 'axios';
 
-const Course = () => {
-    const [courses, setCourses] = useState([]);
-    let {courseId} = useParams()
 
+function Course() {
+    let { courseId } = useParams();
+    const [course, setCourse] = useState(null);
+    
     useEffect(() => {
-        axios
-          .get("http://localhost:3000/admin/courses/", {
+        
+        axios.get("http://localhost:3000/admin/course/" +courseId, {
+            method: "GET",
             headers: {
-                "Authorization" : "Bearer "+ localStorage.getItem("token")
+                "Authorization": "Bearer " + localStorage.getItem("token")
             }
-          })
-          .then((response) => {
-            const data = response.data;
-            console.log(data)
-            // if (data && data.courses) {
-              setCourses(data); 
-            //   console.log(courses+"  :: kjvhddhfkjglgl")
-            // }
-          })
-          .catch((error) => {
-            console.error('Axios request failed:', error);
-          });
-      }, []);
+        }).then(res => {
+            setCourse(res.data.course);
+        });
+    }, []);
+    
+    // for (let i = 0; i<course.length; i++) {
+    //     if (course[i].id == courseId) [
+    //         course = course[i]
+    //     ]
+    // }
 
-      let course = null;
+    if (!course) {
+        return <div>
+            Loading....
+        </div>
+    }
 
-      for(let i = 0; i < courses.length; i++){
-        if(courses[i].id == courseId){
-            course = courses[i];
-            console.log(course);
-        }
-      }
-      if(!course){
-        console.log("Loading.....")
-      }
-
-  return (
-    <div>
-        <CourseCard course={course} />
-        <UpdateCard courses={courses} course={course} setCourses={setCourses} />
+    return (
+        <div>
+            <GrayTopper title = {course.title}></GrayTopper>
+                <Grid container>
+                    <Grid item lg={8} md={12} sm={12}>
+                        <UpdateCard course={course} setCourse={setCourse} />
+                    </Grid>
+                    <Grid item lg={4} md={12} sm={12}>
+                        <CourseCard course={course} />
+                    </Grid>
+                </Grid>
+        </div>
+    )
+}
+function GrayTopper({title}) {
+    return <div style={{height: 250, background: "#212121", top: 0, width: "100vw", zIndex: 0, marginBottom: -250}}>
+        <div style={{ height: 250, display: "flex", justifyContent: "center", flexDirection: "column"}}>
+            <div>
+                <Typography style={{color: "white", fontWeight: 600}} variant="h3" textAlign={"center"}>
+                    {title}
+                </Typography>
+            </div>
+        </div>
     </div>
-  )
 }
 
-function UpdateCard(props) {
-    console.log("hi there from update card")
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [image, setImage] = useState("");
-    const course = props.course;
+function UpdateCard({course, setCourse}) {
+    const [title, setTitle] = useState(course.title);
+    const [description, setDescription] = useState(course.description);
+    const [image, setImage] = useState(course.imagelink);
+    const [price, setPrice] = useState(course.price);
 
     return <div style={{display: "flex", justifyContent: "center"}}>
-    <Card varint={"outlined"} style={{width: 400, padding: 20}}>
+    <Card varint={"outlined"} style={{maxWidth: 600, marginTop: 200}}>
+        <div style={{padding: 20}}>
+            <Typography style={{marginBottom: 10}}>Update course details</Typography>
+            <TextField
+                defaultValue={title}
+                style={{marginBottom: 10}}
+                onChange={(e) => {
+                    setTitle(e.target.value)
+                }}
+                fullWidth={true}
+                label="Title"
+                variant="outlined"
+            />
 
-    <Typography>Update course details</Typography>
-    <TextField
-        onChange={(e) => {
-            setTitle(e.target.value)
-        }}
-        fullWidth={true}
-        label="Title"
-        variant="outlined"
-    />
+            <TextField
+                value={description}
+                style={{marginBottom: 10}}
+                onChange={(e) => {
+                    setDescription(e.target.value)
+                }}
+                fullWidth={true}
+                label="Description"
+                variant="outlined"
+            />
 
-    <TextField
-        onChange={(e) => {
-            setDescription(e.target.value)
-        }}
-        fullWidth={true}
-        label="Description"
-        variant="outlined"
-    />
+            <TextField
+                value={image}
+                style={{marginBottom: 10}}
+                onChange={(e) => {
+                    setImage(e.target.value)
+                }}
+                fullWidth={true}
+                label="Image link"
+                variant="outlined"
+            />
+            <TextField
+                value={price}
+                style={{marginBottom: 10}}
+                onChange={(e) => {
+                    setPrice(e.target.value)
+                }}
+                fullWidth={true}
+                label="Price"
+                variant="outlined"
+            />
 
-    <TextField
-        onChange={(e) => {
-            setImage(e.target.value)
-        }}
-        fullWidth={true}
-        label="Image link"
-        variant="outlined"
-    />
-
-    <Button
-        size={"large"}
-        variant="contained"
-
-        onClick={() => {
-            axios.put("http://localhost:3000/admin/courses/"+course.id, {
-                headers: {
-                    "Authorization": "Bearer " + localStorage.getItem("token")
-                }
-            }).then((response) => {
-                const data = response.data;
-                let updatedCourses = [];
-                for (let i = 0; i< courses.length; i++) {
-                    
-                    if (props.courses[i].id == course.id) {
-                        updatedCourses.push({
-                            id: course.id,
-                            title: title,
-                            description: description,
-                            imageLink: image
-                        })
-                    } else {
-                        updatedCourses.push(props.courses[i]);
-                    }
-                }
-                props.setCourses(updatedCourses);
-            })
-        }}
-    > Update course</Button>
+            <Button
+                variant="contained"
+                onClick={async () => {
+                    axios.put("http://localhost:3000/admin/courses/" + course._id, {
+                        title: title,
+                        description: description,
+                        imagelink: image,
+                        published: true,
+                        price: price,
+                    }, {
+                        headers: {
+                            "Content-type": "application/json",
+                            "Authorization": "Bearer " + localStorage.getItem("token")
+                        }
+                    });
+                    let updatedCourse = {
+                        _id: course._id,
+                        title: title,
+                        description: description,
+                        imagelink: image,
+                        price
+                    };
+                    setCourse(updatedCourse);
+                }}
+            > Update course</Button>
+        </div>
     </Card>
 </div>
 }
 
 function CourseCard(props) {
-    // console.log("hi there from update card")
-    // console.log(props.courses+"::  Props.COurses")
-    const course = props.courses;
-    // console.log(course+" :: bkbsdkjfbjbds")
-    return <div style={{display: "flex", justifyContent: "center"}}>
+    const course = props.course;
+    return <div style={{display: "flex",  marginTop: 50, justifyContent: "center", width: "100%"}}>
      <Card style={{
         margin: 10,
-        width: 300,
-        minHeight: 200
+        width: 350,
+        minHeight: 200,
+        borderRadius: 20,
+        marginRight: 50,
+        paddingBottom: 15,
+        zIndex: 2
     }}>
-
-        <Typography>In the CourseCard</Typography>
-        <Typography textAlign={"center"} variant="h5">{course.title}</Typography>
-        <Typography textAlign={"center"} variant="subtitle1">{course?.description}</Typography>
-        <img src={course?.imageLink} style={{width: 300}} ></img>
+        <img src={course.imagelink} style={{width: 350}} ></img>
+        <div style={{marginLeft: 10}}>
+            <Typography variant="h5">{course.title}</Typography>
+            <Typography variant="subtitle2" style={{color: "gray"}}>
+                Price
+            </Typography>
+            <Typography variant="subtitle1">
+                <b>Rs {course.price} </b>
+            </Typography>
+        </div>
     </Card>
     </div>
 }
 
-
-
-
-export default Course
+export default Course;

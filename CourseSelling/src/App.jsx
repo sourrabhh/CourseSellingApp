@@ -6,7 +6,6 @@ import AddCourse from './assets/Components/AddCourse';
 import Courses from './assets/Components/Courses';
 import Course from './assets/Components/Course';
 
-
 function App() {
 
   return (
@@ -22,7 +21,7 @@ function App() {
             <Route path='/login' element= { <Signin /> }  />
             <Route path='/addcourse' element= { <AddCourse /> } />
             <Route path='/courses' element={ <Courses /> } />
-            <Route path='/courses/:courseId' element={ <Course />} />
+            <Route path='/course/:courseId' element={ <Course />} />
           </Routes>
         </Router>
         

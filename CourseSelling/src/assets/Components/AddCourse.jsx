@@ -70,18 +70,12 @@ const AddCourse = () => {
                             published: true,
                         }),
                         headers:{
-                            "Content-type" : "application/json",
                             "Authorization" : "Bearer "+ localStorage.getItem("token")
                         }
-                    }).then((res) => {
-                        res.json().then((data) => {
-                            // console.log(data.token);
-                            alert("Course Added")
-                        })
                     })
+                        alert("Course Added")
                 }}
-            >
-                Add Course
+            > Add Course
             </Button>
         </Card>
         </div>
