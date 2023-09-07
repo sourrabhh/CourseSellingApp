@@ -1,8 +1,11 @@
 import { BrowserRouter as Router,Routes,Route } from 'react-router-dom'
-import Signup from './assets/Components/Signup'
-import AppBar from './assets/Components/AppBar'
-import Signin from './assets/Components/Signin'
-import AddCourse from './assets/Components/AddCourse'
+import Signup from './assets/Components/Signup';
+import AppBar from './assets/Components/AppBar';
+import Signin from './assets/Components/Signin';
+import AddCourse from './assets/Components/AddCourse';
+import Courses from './assets/Components/Courses';
+import Course from './assets/Components/Course';
+
 
 function App() {
 
@@ -15,11 +18,11 @@ function App() {
           <AppBar />
           <Routes>
 
-            <Route path='/' element= { <Signin/> } />
             <Route path='/signup' element= {<Signup />} /> 
             <Route path='/login' element= { <Signin /> }  />
             <Route path='/addcourse' element= { <AddCourse /> } />
-
+            <Route path='/courses' element={ <Courses /> } />
+            <Route path='/courses/:courseId' element={ <Course />} />
           </Routes>
         </Router>
         

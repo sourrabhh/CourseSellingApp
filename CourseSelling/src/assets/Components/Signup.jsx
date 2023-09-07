@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import { Typography } from '@mui/material';
+import axios from "axios";
+
 
 const Signup = () => {
 
@@ -44,22 +46,14 @@ const Signup = () => {
                         <Button 
                             variant="contained" 
                             size={'large'}
-                            onClick={() => {
-                                fetch( 'http://localhost:3000/admin/signup',{
-                                    method: "POST",
-                                    body: JSON.stringify({
-                                        username: email,
-                                        password: password
-                                    }),
-                                    headers:{
-                                        "Content-type" : "application/json"
-                                    }
-                                }).then((res) => {
-                                    res.json().then((data)=> {
-                                        localStorage.setItem("token", data.token);
-                                        console.log(data.token);
-                                    })
+                            onClick={ async () => {
+                                const response = await axios.post("http://localhost:3000/admin/signup", {
+                                    username: email,
+                                    password: password
                                 })
+                                    let data = response.data;
+                                    localStorage.setItem("token", data.token);
+                                    window.location = "/"                
                             }}
                         >
                             SignUp</Button>        
